@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:menu="http://java.sun.com/jsf/composite/menu"
+	xmlns:comp="http://java.sun.com/jsf/composite/components">
+<h:head>
+	<title>Contato</title>
+	<h:outputStylesheet library="primefaces" name="primefaces.css" />
+	<h:outputStylesheet name="styles/global.css" />
+</h:head>
+<body>
+	<h:form id="formContato">
+		<p:growl id="messages" />
+		<comp:menu />
+		<p:card>
+			<f:facet name="title">
+        Relatório de Clientes e Contatos
+   			 </f:facet>
+
+			<p:dataTable value="#{registroMBean.clientes}" var="cliente"
+				rowKey="#{cliente.id}" scrollable="true" scrollHeight="450">
+				<f:facet name="header">
+               	Clientes
+            </f:facet>
+				<p:column style="width:2rem" ariaHeaderText="Row Toggler">
+					<p:rowToggler />
+				</p:column>
+				<p:column headerText="Nome Completo">
+					<h:outputText value="#{cliente.nomeCompleto}" />
+				</p:column>
+
+				<p:column headerText="Telefone 1">
+					<h:outputText value="#{contato.telefone1}" />
+				</p:column>
+
+				<p:column headerText="Telefone 2">
+					<h:outputText value="#{contato.telefone1}" />
+				</p:column>
+				<p:column headerText="Data de Registro">
+					<h:outputText value="#{cliente.dataRegistroCliente}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Emails" style="width:350px">
+					<ui:repeat value="#{cliente.emails}" var="email">
+						<ul>
+							<li>#{email}</li>
+						</ul>
+					</ui:repeat>
+				</p:column>
+				<p:rowExpansion>
+					<div class="product">
+						<div class="product-list-item">
+							<ui:repeat value="#{cliente.contatos}" var="contato">
+								<div class="product-list-detail">
+									
+									<div class="product-name">Nome Completo: #{contato.nomeCompleto}</div>
+									<div class="product-description">Telefone 1 - #{contato.telefone1}</div>
+									<div class="product-description">Telefone 2 - #{contato.telefone2}</div>
+									<ui:repeat value="#{contato.emails}" var="email">
+										<ul>
+											<li>#{email}</li>
+										</ul>
+									</ui:repeat>
+								</div>
+							</ui:repeat>
+						</div>
+					</div>
+				</p:rowExpansion>
+			</p:dataTable>
+		</p:card>
+	</h:form>
+
+</body>
+</html>

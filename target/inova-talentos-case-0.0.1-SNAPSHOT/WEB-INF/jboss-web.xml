@@ -1,0 +1,3 @@
+<jboss-web>
+    <context-root>/gestao-clientes</context-root>
+</jboss-web>

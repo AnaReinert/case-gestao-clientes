@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:menu="http://java.sun.com/jsf/composite/menu">
+<h:head>
+	<title>Gestão de Clientes - Cliente</title>
+	<h:outputStylesheet library="primefaces" name="primefaces.css" />
+</h:head>
+<body>
+	<h:form id="formCliente">
+		<p:growl id="messages" />
+		<menu:menu />
+		<p:commandButton icon="pi pi-plus" value="Cadastrar Novo Cliente"
+			oncomplete="PF('cadastroClientesDialog').show()" />
+
+		<p:dataTable id="tableClientes" widgetVar="tableClientes"
+			var="cliente" value="#{clienteMBean.clientes}" rowKey="#{cliente.id}"
+			paginator="true" rows="10" selectionRowMode="add"
+			paginatorPosition="bottom">
+			<f:facet name="header">
+				<div>
+					<span style="font-weight: bold">CLIENTES</span>
+				</div>
+			</f:facet>
+
+			<p:column headerText="Nome Completo">
+				<h:outputText value="#{cliente.nomeCompleto}" />
+			</p:column>
+			<p:column headerText="Data de Registro">
+				<h:outputText value="#{cliente.dataRegistroCliente}" />
+			</p:column>
+			<p:column headerText="Telefone 1">
+				<h:outputText value="#{cliente.telefone1}" />
+			</p:column>
+			<p:column headerText="Telefone 2">
+				<h:outputText value="#{cliente.telefone2}" />
+			</p:column>
+
+			<p:column exportable="false">
+				<p:commandButton icon="pi pi-pencil"
+					oncomplete="PF('cadastroClientesDialog').show()" process="@this">
+					<f:setPropertyActionListener value="#{cliente}"
+						target="#{clienteMBean.cliente}" />
+				</p:commandButton>
+
+				<p:commandButton class="ui-button-warning rounded-button"
+					icon="pi pi-trash" process="@this"
+					oncomplete="PF('excluirClienteDialog').show()">
+					<f:setPropertyActionListener value="#{cliente}"
+						target="#{clienteMBean.cliente}" />
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+	<form id="dialogs">
+		<p:dialog header="Cadastro de Cliente" showEffect="fade"
+			widgetVar="cadastroClientesDialog">
+
+			<p:outputPanel id="contentCliente">
+				<p:outputLabel for="@next" value="Nome Completo:" />
+				<p:inputText id="fullName"
+					value="#{clienteMBean.cliente.nomeCompleto}" required="true" />
+
+				<p:outputLabel for="@next" value="E-mails:" />
+				<p:chips id="emails" style="widht: 60px"
+					requiredMessage="Email inválido" max="4">
+				</p:chips>
+
+				<h:outputLabel for="telefone1" value="Telefone 1:" />
+				<p:inputText id="telefone1"
+					value="#{clienteMBean.cliente.telefone1}" mask="(99) 99999-9999" />
+
+				<h:outputLabel for="telefone2" value="Telefone 2:" />
+				<p:inputText id="telefone2"
+					value="#{clienteMBean.cliente.telefone2}" mask="(99) 99999-9999" />
+
+				<p:outputLabel for="@next" value="Data de Registro:" />
+				<p:calendar id="registerDate"
+					value="#{clienteMBean.cliente.dataRegistroCliente}"
+					pattern="dd/MM/yyyy" required="true" />
+
+				<p:selectManyMenu id="menu" value="#{clienteMBean.cliente.contatos}"
+					var="c" filter="true" filterMatchMode="contains"
+					filterNormalize="true" showCheckbox="true"
+					styleClass="manymenu-advanced">
+					<f:selectItems value="#{clienteMBean.cliente.contatos}"
+						var="country" itemLabel="#{contato.nomeCompleto}"
+						itemValue="#{contato}" />
+					<p:column>
+						<h:outputText value="#{c.nomeCompleto}" />
+					</p:column>
+				</p:selectManyMenu>
+			</p:outputPanel>
+			<f:facet name="footer">
+				<p:commandButton value="Salvar"
+					actionListener="#{clienteMBean.cadastrarCliente}"
+					update="formCliente:messages, formCliente:tableClientes"
+					process="contentCliente @this"
+					oncomplete="PF('cadastroClientesDialog').hide()" />
+			</f:facet>
+
+		</p:dialog>
+
+		<p:confirmDialog widgetVar="excluirClienteDialog" showEffect="fade"
+			width="300"
+			message="Você está prestes a excluir um cliente. Deseja Prosseguir?"
+			header="Excluir" severity="warn">
+			<p:commandButton value="Yes" icon="pi pi-check"
+				actionListener="#{clienteMBean.excluirCliente}" process="@this"
+				update="formCliente:tableClientes"
+				oncomplete="PF('excluirClienteDialog').hide()" />
+			<p:commandButton value="Cancelar" type="button"
+				styleClass="ui-button-secondary"
+				onclick="PF('deleteProductDialog').hide()" />
+		</p:confirmDialog>
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+model\entity\Contato.class
+model\entity\Cliente.class
+service\ClienteSBean.class
+service\ContatoSBean.class
+controller\AcessoManageBean.class
+utils\EmailUtils.class
+controller\ClienteManageBean.class
+model\entity\Cadastro.class
+repository\BancoDB.class
+controller\ContatoManageBean.class

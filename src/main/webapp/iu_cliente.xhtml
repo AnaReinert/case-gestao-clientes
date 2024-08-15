@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:comp="http://java.sun.com/jsf/composite/components">
+<h:head>
+	<title>Cliente</title>
+	<h:outputStylesheet library="primefaces" name="primefaces.css" />
+	<h:outputStylesheet name="styles/global.css" />
+
+</h:head>
+<body>
+	<h:form id="formCliente">
+		<p:growl id="messages" />
+		<comp:menu />
+
+		<p:card>
+			<div class="separator">
+
+				<div class="container-input">
+					<p:outputLabel for="@next" value="Nome Completo:" />
+					<p:inputText id="fullName" required="true"
+						requiredMessage="Nome é obrigatório"
+						value="#{clienteMBean.cliente.nomeCompleto}" />
+				</div>
+
+				<div class="container-input">
+					<p:outputLabel for="@next"
+						value="E-mails: (Para +1 email pressione enter)" />
+					<p:chips id="emails" style="height: 60px" required="true"
+						requiredMessage="Email é obrigatório" max="4"
+						value="#{clienteMBean.cliente.emails}">
+					</p:chips>
+				</div>
+				
+				<div class="container-input">
+					<p:outputLabel for="@next" value="Data de Registro:" />
+					<p:calendar id="registerDate"
+						requiredMessage="Data de Registro é obrigatório"
+						value="#{clienteMBean.cliente.dataRegistroCliente}"
+						pattern="dd/MM/yyyy" required="true" />
+				</div>
+			</div>
+
+
+			<div class="separator">
+
+				<div class="container-input">
+					<h:outputLabel for="telefone1" value="Telefone 1: *" />
+					<p:inputMask id="telefone1" required="true"
+						requiredMessage="Telefone é obrigatório"
+						value="#{clienteMBean.cliente.telefone1}" mask="(99) 99999-9999" />
+				</div>
+
+				<div class="container-input">
+					<h:outputLabel for="telefone2" value="Telefone 2:" />
+					<p:inputMask id="telefone2"
+						value="#{clienteMBean.cliente.telefone2}" mask="(99) 99999-9999" />
+				</div>
+
+				<div class="container-input container-contatos">
+
+					<p:commandButton value="Adicionar Contato"
+						update="formCliente:messages, formCliente:tableClientes"
+						oncomplete="PF('contatosDialogWV').show()" />
+				</div>
+			</div>
+			<p:commandButton value="Salvar"
+				actionListener="#{clienteMBean.onCadastrar}"
+				update="formCliente:messages, formCliente:tableClientes"
+				oncomplete="PF('cadastroClientesDialog').hide()" />
+		</p:card>
+
+		<p:dataTable id="tableClientes" widgetVar="tableClientes"
+			var="cliente" value="#{clienteMBean.clientes}" rowKey="#{cliente.id}"
+			paginator="true" rows="10" selectionRowMode="add"
+			selection="#{clienteMBean.clienteSelected}" selectionMode="single"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="160">
+
+			<p:ajax event="rowSelect"
+				oncomplete="PF('cadastroClientesDialog').show()"
+				update="formDialog:cadastroClientesAtt"
+				listener="#{clienteMBean.onRowSelect}" />
+
+			<f:facet name="header">
+				<div>
+					<span style="font-weight: bold">TABELA DE CLIENTES</span>
+				</div>
+			</f:facet>
+
+			<p:column headerText="Nome Completo">
+				<h:outputText value="#{cliente.nomeCompleto}" />
+			</p:column>
+			<p:column headerText="Data de Registro">
+				<h:outputText value="#{cliente.dataRegistroCliente}">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Telefone 1">
+				<h:outputText value="#{cliente.telefone1}" />
+			</p:column>
+			<p:column headerText="Telefone 2">
+				<h:outputText value="#{cliente.telefone2}" />
+			</p:column>
+
+			<p:column headerText="Emails">
+				<ui:repeat value="#{cliente.emails}" var="email">
+					<ul>
+						<li>#{email}</li>
+					</ul>
+				</ui:repeat>
+			</p:column>
+
+			<p:column exportable="false">
+				<p:commandButton class="ui-button-warning rounded-button"
+					icon="pi pi-trash" process="@this"
+					oncomplete="PF('excluirClienteDialog').show()">
+					<f:setPropertyActionListener value="#{cliente}"
+						target="#{clienteMBean.cliente}" />
+				</p:commandButton>
+			</p:column>
+
+		</p:dataTable>
+
+		<p:dialog id="contatosDialog" widgetVar="contatosDialogWV"
+			header="Contatos">
+			<p:dataTable id="datatablecontato" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom"
+				selection="#{clienteMBean.contatosSelected}" rowKey="#{c.id}"
+				value="#{clienteMBean.contatos}" var="c"
+				emptyMessage="Nenhum contato Encontrado.">
+
+
+				<p:column selectionMode="multiple">
+					<h:outputText value="#{c.nomeCompleto}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:commandButton value="Confirmar" icon="pi pi-check"
+				actionListener="#{clienteMBean.adicionarContato}" process="@this"
+				update="formCliente:tableClientes"
+				oncomplete="PF('contatosDialogWV').hide()" />
+		</p:dialog>
+	</h:form>
+
+	<h:form id="formDialog">
+
+		<p:dialog header="Cadastro de Cliente" showEffect="fade" modal="true"
+			hideEffect="fade" draggable="false"
+			widgetVar="cadastroClientesDialog" id="cadastroClientesAtt"
+			width="960">
+
+			<p:outputPanel id="contentCliente">
+				<div class="separator">
+
+					<div class="container-input">
+						<p:outputLabel for="@next" value="Nome Completo:" />
+						<p:inputText id="fullName"
+							value="#{clienteMBean.clienteSelected.nomeCompleto}" />
+					</div>
+
+					<div class="container-telefones">
+						<p:outputLabel for="@next" value="E-mails:" />
+						<p:chips id="emails" requiredMessage="Email inválido" max="4"
+							value="#{clienteMBean.clienteSelected.emails}">
+						</p:chips>
+					</div>
+
+					<div class="container-input">
+						<p:outputLabel for="@next" value="Data de Registro:" />
+						<p:calendar id="registerDate"
+							value="#{clienteMBean.clienteSelected.dataRegistroCliente}"
+							pattern="dd/MM/yyyy" required="true" />
+					</div>
+				</div>
+				<div class="separator">
+
+					<div class="container-telefones">
+						<h:outputLabel for="telefone1" value="Telefone 1:" />
+						<p:inputMask id="telefone1"
+							value="#{clienteMBean.clienteSelected.telefone1}"
+							mask="(99) 99999-9999" />
+					</div>
+
+					<div class="container-telefones">
+						<h:outputLabel for="telefone2" value="Telefone 2:" />
+						<p:inputMask id="telefone2" style="margin-left:3px"
+							value="#{clienteMBean.clienteSelected.telefone2}"
+							mask="(99) 99999-9999" />
+					</div>
+
+					<div
+						class="container-input container-contatos container-add-contato">
+						<p:commandButton value="Adicionar Contato"
+							update="formCliente:messages, formDialog:contentCliente, formDialog:contatosDialogAtt"
+							oncomplete="PF('contatosDialogAttWV').show()" />
+					</div>
+				</div>
+
+				<div class="container-table">
+					<p:dataTable id="tableContatoCliente"
+						widgetVar="tableContatoClienteWV" var="contato"
+						value="#{clienteMBean.clienteSelected.contatos}"
+						rowKey="#{contato.id}" paginator="true" rows="2"
+						selectionMode="single" paginatorPosition="bottom"
+						scrollable="true" scrollHeight="100">
+						<f:facet name="header">
+							<div>
+								<span style="font-weight: bold">CONTATOS</span>
+							</div>
+						</f:facet>
+						<p:column headerText="Nome Completo">
+							<h:outputText value="#{contato.nomeCompleto}" />
+						</p:column>
+
+						<p:column headerText="Telefone 1">
+							<h:outputText value="#{contato.telefone1}" />
+						</p:column>
+
+						<p:column headerText="Telefone 2">
+							<h:outputText value="#{contato.telefone1}" />
+						</p:column>
+
+						<p:column headerText="Emails" style="width:230px">
+							<ui:repeat value="#{contato.emails}" var="email">
+								<ul>
+									<li>#{email}</li>
+								</ul>
+							</ui:repeat>
+						</p:column>
+
+						<p:column exportable="false">
+							<p:commandButton class="ui-button-warning rounded-button"
+								icon="pi pi-trash" process="@this"
+								oncomplete="PF('excluirContatoDialog').show()"
+								update="formDialog:contentCliente">
+								<f:setPropertyActionListener value="#{contato}"
+									target="#{clienteMBean.contatoClienteSelected}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</div>
+			</p:outputPanel>
+			<f:facet name="footer">
+				<p:commandButton value="ATUALIZAR"
+					actionListener="#{clienteMBean.onAtualizar}"
+					update="formCliente:messages, formCliente:tableClientes"
+					process="contentCliente @this"
+					oncomplete="PF('cadastroClientesDialog').hide()" />
+			</f:facet>
+		</p:dialog>
+
+		<p:confirmDialog widgetVar="excluirClienteDialog" showEffect="fade"
+			width="450"
+			message="Você está prestes a excluir um cliente. Deseja Prosseguir?"
+			header="Excluir Cliente">
+			<p:commandButton value="Confirmar" icon="pi pi-check"
+				actionListener="#{clienteMBean.onExcluir}" process="@this"
+				update="formCliente:tableClientes"
+				oncomplete="PF('excluirClienteDialog').hide()" />
+			<p:commandButton value="Cancelar" type="button"
+				styleClass="ui-button-secondary"
+				onclick="PF('excluirClienteDialog').hide()" />
+		</p:confirmDialog>
+
+		<p:confirmDialog widgetVar="excluirContatoDialog" showEffect="fade"
+			width="450" message="Contato escolhido será removido do cliente"
+			header="Excluir Contato">
+			<p:commandButton value="Confirmar" icon="pi pi-check"
+				actionListener="#{clienteMBean.onExcluirContato}" process="@this"
+				update="formDialog:tableContatoCliente"
+				oncomplete="PF('excluirContatoDialog').hide()" />
+			<p:commandButton value="Cancelar" type="button"
+				styleClass="ui-button-secondary"
+				onclick="PF('excluirContatoDialog').hide()" />
+		</p:confirmDialog>
+
+		<p:dialog id="contatosDialogAtt" widgetVar="contatosDialogAttWV">
+			<div class="container-table">
+				<p:dataTable id="datatablecontatoatt" paginatorAlwaysVisible="false"
+					paginatorPosition="bottom"
+					selection="#{clienteMBean.contatosClienteSelected}"
+					rowKey="#{c.id}" value="#{clienteMBean.onRemoverContatoExtra()}"
+					var="c" emptyMessage="Nenhum contato Encontrado.">
+					<f:facet name="header">
+						<div>
+							<span style="font-weight: bold">CONTATOS</span>
+						</div>
+					</f:facet>
+					<p:column selectionMode="multiple">
+						<h:outputText value="#{c.nomeCompleto}" />
+					</p:column>
+				</p:dataTable>
+			</div>
+
+			<p:commandButton value="Confirmar" icon="pi pi-check"
+				actionListener="#{clienteMBean.atualizarContatosCliente}"
+				oncomplete="PF('contatosDialogAttWV').hide();"
+				update="formDialog:tableContatoCliente, formCliente:messages" />
+		</p:dialog>
+	</h:form>
+
+</body>
+</html>

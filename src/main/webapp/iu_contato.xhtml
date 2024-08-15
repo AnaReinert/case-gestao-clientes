@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:menu="http://java.sun.com/jsf/composite/menu"
+	xmlns:comp="http://java.sun.com/jsf/composite/components">
+
+<h:head>
+	<title>Contato</title>
+	<h:outputStylesheet library="primefaces" name="primefaces.css" />
+	<h:outputStylesheet name="styles/global.css" />
+</h:head>
+<body>
+	<h:form id="formContato">
+		<p:growl id="messages" />
+		<comp:menu />
+
+		<p:card>
+			<div class="separator">
+
+				<div class="container-input">
+					<p:outputLabel for="@next" value="Nome Completo:" />
+					<p:inputText id="fullName" required="true"
+						requiredMessage="Nome Completo é Obrigatório"
+						value="#{contatoMBean.contato.nomeCompleto}" />
+				</div>
+
+				<div class="container-input">
+					<p:outputLabel for="@next"
+						value="E-mails: (Para +1 email pressione enter)" />
+					<p:chips id="emails" style="height: 60px" required="true"
+						requiredMessage="Email é obrigatório" max="4"
+						value="#{contatoMBean.contato.emails}">
+					</p:chips>
+				</div>
+			</div>
+			<div class="separator">
+
+				<div class="container-input">
+					<h:outputLabel for="telefone1" value="Telefone 1:" />
+					<p:inputMask id="telefone1" required="true"
+						requiredMessage="Telefone é obrigatório"
+						value="#{contatoMBean.contato.telefone1}" mask="(99) 99999-9999" />
+				</div>
+
+				<div class="container-input">
+					<h:outputLabel for="telefone2" value="Telefone 2:" />
+					<p:inputMask id="telefone2"
+						value="#{contatoMBean.contato.telefone2}" mask="(99) 99999-9999" />
+				</div>
+			</div>
+
+			<p:commandButton value="CADASTRAR"
+				action="#{contatoMBean.onCadastrar}"
+				update="messages, formContato:tableContatos" />
+		</p:card>
+
+		<p:dataTable id="tableContatos" widgetVar="tableContatos"
+			var="contato" value="#{contatoMBean.contatos}" rowKey="#{contato.id}"
+			paginator="true" rows="10" selectionRowMode="add"
+			selection="#{contatoMBean.contatoSelected}" selectionMode="single"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="160">
+			<f:facet name="header">
+				<div>
+					<span style="font-weight: bold">CONTATOS</span>
+				</div>
+			</f:facet>
+
+			<p:ajax event="rowSelect"
+				oncomplete="PF('cadastroContatosDialog').show()"
+				update="formDialog:cadastroContatosAtt"
+				listener="#{contatoMBean.onRowSelect}" />
+
+			<p:column headerText="Nome Completo">
+				<h:outputText value="#{contato.nomeCompleto}" />
+			</p:column>
+			<p:column headerText="Telefone 1">
+				<h:outputText value="#{contato.telefone1}" />
+			</p:column>
+			<p:column headerText="Telefone 2">
+				<h:outputText value="#{contato.telefone2}" />
+			</p:column>
+			<p:column headerText="Emails">
+				<ui:repeat value="#{contato.emails}" var="email">
+					<ul>
+						<li>#{email}</li>
+					</ul>
+				</ui:repeat>
+			</p:column>
+			<p:column exportable="false">
+				<p:commandButton class="ui-button-warning rounded-button"
+					icon="pi pi-trash" process="@this"
+					oncomplete="PF('excluirContatoDialog').show()">
+					<f:setPropertyActionListener value="#{contato}"
+						target="#{contatoMBean.contato}" />
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+	<h:form id="formDialog">
+
+		<p:dialog header="Cadastro de Contato" showEffect="fade"
+			widgetVar="cadastroContatosDialog" id="cadastroContatosAtt"
+			width="550">
+
+			<p:outputPanel id="contentContato">
+				<div class="container-input">
+					<p:outputLabel for="@next" value="Nome Completo:" />
+					<p:inputText id="fullName"
+						value="#{contatoMBean.contatoSelected.nomeCompleto}" />
+				</div>
+
+				<div class="container-input">
+					<p:outputLabel for="@next" value="E-mails:" />
+					<p:chips id="emails" style="height: 60px"
+						requiredMessage="Email inválido" max="4"
+						value="#{contatoMBean.contatoSelected.emails}">
+					</p:chips>
+				</div>
+				<div class="container-input">
+					<h:outputLabel for="telefone1" value="Telefone 1:" />
+					<p:inputMask id="telefone1"
+						value="#{contatoMBean.contatoSelected.telefone1}"
+						mask="(99) 99999-9999" />
+				</div>
+
+				<div class="container-input">
+					<h:outputLabel for="telefone2" value="Telefone 2:" />
+					<p:inputMask id="telefone2"
+						value="#{contatoMBean.contatoSelected.telefone2}"
+						mask="(99) 99999-9999" />
+				</div>
+			</p:outputPanel>
+			<f:facet name="footer">
+				<p:commandButton value="ATUALIZAR"
+					actionListener="#{contatoMBean.onAtualizar}"
+					update="formContato:messages, formContato:tableContatos"
+					process="contentContato @this"
+					oncomplete="PF('cadastroContatosDialog').hide()" />
+			</f:facet>
+		</p:dialog>
+
+		<p:confirmDialog widgetVar="excluirContatoDialog" showEffect="fade"
+			width="450"
+			message="Você está prestes a excluir um contato. Deseja Prosseguir?"
+			header="Excluir Contato">
+			<p:commandButton value="Confirmar" icon="pi pi-check"
+				actionListener="#{contatoMBean.onExcluir}" process="@this"
+				update="formContato:tableContatos"
+				oncomplete="PF('excluirContatoDialog').hide()" />
+			<p:commandButton value="Cancelar" type="button"
+				styleClass="ui-button-secondary"
+				onclick="PF('excluirContatoDialog').hide()" />
+		</p:confirmDialog>
+	</h:form>
+
+</body>
+</html>

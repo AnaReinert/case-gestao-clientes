@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:menu="http://java.sun.com/jsf/composite/menu">
+<h:head>
+	<title>Contato</title>
+	<h:outputStylesheet library="primefaces" name="primefaces.css" />
+</h:head>
+<body>
+	<h:form id="formContato">
+		<p:growl id="messages" />
+
+		<p:outputLabel for="@next" value="Nome Completo:" />
+		<p:inputText id="fullName"
+			value="#{contatoMBean.contato.nomeCompleto}" required="true" />
+
+		<p:outputLabel for="@next" value="E-mails:" />
+		<p:chips id="emails" style="widht: 60px"
+			requiredMessage="Email inválido" max="4">
+		</p:chips>
+
+		<h:outputLabel for="telefone1" value="Telefone 1:" />
+		<p:inputText id="telefone1" value="#{contatoMBean.contato.telefone1}"
+			mask="(99) 99999-9999" />
+
+		<h:outputLabel for="telefone2" value="Telefone 2:" />
+		<p:inputText id="telefone2" value="#{contatoMBean.contato.telefone2}"
+			mask="(99) 99999-9999" />
+
+		<p:commandButton value="Salvar"
+			action="#{contatoMBean.cadastrarContato}" update="messages, formContato:tableContatos" />
+
+
+		<p:dataTable id="tableContatos" widgetVar="tableContatos"
+			var="contato" value="#{contatoMBean.contatos}" rowKey="#{contato.id}"
+			paginator="true" rows="10" selectionRowMode="add"
+			paginatorPosition="bottom">
+			<f:facet name="header">
+				<div>
+					<span style="font-weight: bold">Contatos</span>
+				</div>
+			</f:facet>
+
+			<p:column headerText="Nome Completo">
+				<h:outputText value="#{contato.nomeCompleto}" />
+			</p:column>
+			<p:column headerText="Telefone 1">
+				<h:outputText value="#{contato.telefone1}" />
+			</p:column>
+		</p:dataTable>
+	</h:form>
+</body>
+</html>

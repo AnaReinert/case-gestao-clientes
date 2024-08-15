@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+<head>
+<title>Gestão de Clientes - Acesso</title>
+</head>
+<body>
+	<h:outputText value="Olá!" />
+	<h:form id="formAcesso">
+		<p:panel>
+			<p:messages id="messages" />
+
+			<p:outputLabel for="@next" value="Nome:" />
+			<p:inputText id="name" value="#{acessoMBean.nomeCliente}" required="true" />
+
+			<p:outputLabel for="@next" value="Email:" />
+			<p:password id="email" value="#{acessoMBean.chaveAcesso}" required="true"  toggleMask="true" redisplay="true" />
+
+			<p:commandButton value="Enviar" action="#{acessoMBean.encontrarCliente()}"
+				update="messages" />
+		</p:panel>
+	</h:form>
+</body>
+</html>
