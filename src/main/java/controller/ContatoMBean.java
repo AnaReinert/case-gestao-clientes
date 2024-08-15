@@ -4,16 +4,15 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 import controller.abstracts.CrudBaseMBean;
 import model.entity.transferobject.TOContato;
 import service.ContatoSBean;
-import utils.EmailUtils;
 
 @ViewScoped
 @Named("contatoMBean")
@@ -21,7 +20,6 @@ public class ContatoMBean extends CrudBaseMBean implements Serializable {
 
 	private static final long serialVersionUID = 7522489086457515519L;
 
-	private EmailUtils emailUtils = EmailUtils.getInstance();
 	private ContatoSBean contatoSBean;
 	private List<TOContato> contatos;
 	private TOContato contato;
@@ -34,45 +32,38 @@ public class ContatoMBean extends CrudBaseMBean implements Serializable {
 
 	@Override
 	public void onCadastrar() {
-		if (validarEmail()) {
+		if (validarEmail(contato.getEmails())) {
 			getContatoSbean().salvarContato(contato);
-			FacesContext context = FacesContext.getCurrentInstance();
-			context.addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_INFO, "Cadastro efetuado com sucesso!", null));
-			contatos = getContatoSbean().listarContatos();
+			showMessage(FacesMessage.SEVERITY_INFO, "Cadastro efetuado com sucesso!");
 			onLimparCadastro();
+		}
+	}
+
+	@Override
+	public void onAtualizar() {
+		if (validarEmail(contatoSelected.getEmails())) {
+			getContatoSbean().atualizarContatos(contatoSelected);
+			getContatoSbean().listarContatos();
+			showMessage(FacesMessage.SEVERITY_INFO, "Contato atualizado com sucesso!");
+			PrimeFaces.current().executeScript("PF('cadastroContatosDialog').hide()");
+		}
+	}
+
+	@Override
+	public void onExcluir() {
+		if(!getContatoSbean().verificaContatoVinculado(contato)) {
+			getContatoSbean().remover(contato);
+			showMessage(FacesMessage.SEVERITY_INFO, "Contato removido com sucesso!");
+		}else {
+			showMessage(FacesMessage.SEVERITY_ERROR, "Contato não pôde ser removido por estar vinculado à 1 ou mais clientes.");
 		}
 		this.contatos = getContatoSbean().listarContatos();
 	}
 
 	@Override
-	public void onAtualizar() {
-		getContatoSbean().atualizarContatos(contatoSelected);
-		getContatoSbean().listarContatos();
-	}
-
-	@Override
-	public void onExcluir() {
-		getContatoSbean().remover(contato);
-	}
-
-	@Override
 	public void onLimparCadastro() {
 		this.contato = new TOContato();
-	}
-
-	private boolean validarEmail() {
-		String emails = "";
-		for (String email : contato.getEmails()) {
-			if (!emailUtils.validaEmail(email)) {
-				emails = emails + " " + email;
-			}
-		}
-		if (!emails.isEmpty()) {
-			showMessage(FacesMessage.SEVERITY_ERROR, "Os seguintes emails estão inválidos: " + emails);
-			return false;
-		}
-		return true;
+		this.contatos = getContatoSbean().listarContatos();
 	}
 
 	public void onRowSelect(SelectEvent<?> event) {

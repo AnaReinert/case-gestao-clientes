@@ -5,23 +5,8 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui">
 <head>
-<title>Gestão de Clientes - Acesso</title>
+	<meta http-equiv="refresh" content="0;url=iu_cliente.xhtml"></meta>
 </head>
 <body>
-	<h:outputText value="Olá!" />
-	<h:form id="formAcesso">
-		<p:panel>
-			<p:messages id="messages" />
-
-			<p:outputLabel for="@next" value="Nome:" />
-			<p:inputText id="name" value="#{acessoMBean.nomeCliente}" required="true" />
-
-			<p:outputLabel for="@next" value="Email:" />
-			<p:password id="email" value="#{acessoMBean.chaveAcesso}" required="true"  toggleMask="true" redisplay="true" />
-
-			<p:commandButton value="Enviar" action="#{acessoMBean.encontrarCliente()}"
-				update="messages" />
-		</p:panel>
-	</h:form>
 </body>
 </html>

@@ -55,12 +55,16 @@
 				<p:rowExpansion>
 					<div class="product">
 						<div class="product-list-item">
+						<div class="contact-header">Contatos</div>
 							<ui:repeat value="#{cliente.contatos}" var="contato">
-								<div class="product-list-detail">
-									
-									<div class="product-name">Nome Completo: #{contato.nomeCompleto}</div>
-									<div class="product-description">Telefone 1 - #{contato.telefone1}</div>
-									<div class="product-description">Telefone 2 - #{contato.telefone2}</div>
+								<div class="contact-detail">
+
+									<div class="contact-name">
+										#{contato.nomeCompleto}</div>
+									<div class="contact-phone">Telefone 1:
+										#{contato.telefone1}</div>
+									<div class="contact-phone">Telefone 2:
+										#{contato.telefone2}</div>
 									<ui:repeat value="#{contato.emails}" var="email">
 										<ul>
 											<li>#{email}</li>

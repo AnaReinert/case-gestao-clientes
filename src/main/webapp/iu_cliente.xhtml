@@ -16,7 +16,7 @@
 		<p:growl id="messages" />
 		<comp:menu />
 
-		<p:card>
+		<p:card id="cardCliente">
 			<div class="separator">
 
 				<div class="container-input">
@@ -34,7 +34,7 @@
 						value="#{clienteMBean.cliente.emails}">
 					</p:chips>
 				</div>
-				
+
 				<div class="container-input">
 					<p:outputLabel for="@next" value="Data de Registro:" />
 					<p:calendar id="registerDate"
@@ -48,9 +48,8 @@
 			<div class="separator">
 
 				<div class="container-input">
-					<h:outputLabel for="telefone1" value="Telefone 1: *" />
-					<p:inputMask id="telefone1" required="true"
-						requiredMessage="Telefone é obrigatório"
+					<h:outputLabel for="telefone1" value="Telefone 1:" />
+					<p:inputMask id="telefone1"
 						value="#{clienteMBean.cliente.telefone1}" mask="(99) 99999-9999" />
 				</div>
 
@@ -69,7 +68,7 @@
 			</div>
 			<p:commandButton value="Salvar"
 				actionListener="#{clienteMBean.onCadastrar}"
-				update="formCliente:messages, formCliente:tableClientes"
+				update="formCliente:messages, formCliente:tableClientes, formCliente:cardCliente"
 				oncomplete="PF('cadastroClientesDialog').hide()" />
 		</p:card>
 
@@ -124,7 +123,7 @@
 
 		</p:dataTable>
 
-		<p:dialog id="contatosDialog" widgetVar="contatosDialogWV"
+		<p:dialog id="contatosDialog" widgetVar="contatosDialogWV" width="400"
 			header="Contatos">
 			<p:dataTable id="datatablecontato" paginatorAlwaysVisible="false"
 				paginatorPosition="bottom"
@@ -138,10 +137,12 @@
 				</p:column>
 			</p:dataTable>
 
-			<p:commandButton value="Confirmar" icon="pi pi-check"
-				actionListener="#{clienteMBean.adicionarContato}" process="@this"
-				update="formCliente:tableClientes"
-				oncomplete="PF('contatosDialogWV').hide()" />
+			<div class="container-input">
+				<p:commandButton value="Confirmar" icon="pi pi-check"
+					actionListener="#{clienteMBean.adicionarContato}" process="@this"
+					update="formCliente:tableClientes"
+					oncomplete="PF('contatosDialogWV').hide()" />
+			</div>
 		</p:dialog>
 	</h:form>
 
@@ -158,12 +159,14 @@
 					<div class="container-input">
 						<p:outputLabel for="@next" value="Nome Completo:" />
 						<p:inputText id="fullName"
+							requiredMessage="Nome Completo é Obrigatório" required="true"
 							value="#{clienteMBean.clienteSelected.nomeCompleto}" />
 					</div>
 
 					<div class="container-telefones">
 						<p:outputLabel for="@next" value="E-mails:" />
-						<p:chips id="emails" requiredMessage="Email inválido" max="4"
+						<p:chips id="emails" requiredMessage="Email é Obrigatório"
+							required="true" max="4"
 							value="#{clienteMBean.clienteSelected.emails}">
 						</p:chips>
 					</div>
@@ -246,9 +249,8 @@
 			<f:facet name="footer">
 				<p:commandButton value="ATUALIZAR"
 					actionListener="#{clienteMBean.onAtualizar}"
-					update="formCliente:messages, formCliente:tableClientes"
-					process="contentCliente @this"
-					oncomplete="PF('cadastroClientesDialog').hide()" />
+					update="formCliente:messages, formCliente:tableClientes, formDialog:contentCliente"
+					process="contentCliente @this" />
 			</f:facet>
 		</p:dialog>
 
@@ -258,8 +260,7 @@
 			header="Excluir Cliente">
 			<p:commandButton value="Confirmar" icon="pi pi-check"
 				actionListener="#{clienteMBean.onExcluir}" process="@this"
-				update="formCliente:tableClientes"
-				oncomplete="PF('excluirClienteDialog').hide()" />
+				update="formCliente" oncomplete="PF('excluirClienteDialog').hide()" />
 			<p:commandButton value="Cancelar" type="button"
 				styleClass="ui-button-secondary"
 				onclick="PF('excluirClienteDialog').hide()" />

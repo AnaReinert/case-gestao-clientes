@@ -17,7 +17,7 @@
 		<p:growl id="messages" />
 		<comp:menu />
 
-		<p:card>
+		<p:card id="cardCadastro">
 			<div class="separator">
 
 				<div class="container-input">
@@ -54,7 +54,7 @@
 
 			<p:commandButton value="CADASTRAR"
 				action="#{contatoMBean.onCadastrar}"
-				update="messages, formContato:tableContatos" />
+				update="messages, formContato:tableContatos, formContato:cardCadastro" />
 		</p:card>
 
 		<p:dataTable id="tableContatos" widgetVar="tableContatos"
@@ -109,14 +109,14 @@
 			<p:outputPanel id="contentContato">
 				<div class="container-input">
 					<p:outputLabel for="@next" value="Nome Completo:" />
-					<p:inputText id="fullName"
+					<p:inputText id="fullName" required="true" requiredMessage="Nome Completo é obrigatório"
 						value="#{contatoMBean.contatoSelected.nomeCompleto}" />
 				</div>
 
 				<div class="container-input">
 					<p:outputLabel for="@next" value="E-mails:" />
-					<p:chips id="emails" style="height: 60px"
-						requiredMessage="Email inválido" max="4"
+					<p:chips id="emails" style="height: 60px" required="true"
+						requiredMessage="Email é obrigatório" max="4"
 						value="#{contatoMBean.contatoSelected.emails}">
 					</p:chips>
 				</div>
@@ -137,9 +137,8 @@
 			<f:facet name="footer">
 				<p:commandButton value="ATUALIZAR"
 					actionListener="#{contatoMBean.onAtualizar}"
-					update="formContato:messages, formContato:tableContatos"
-					process="contentContato @this"
-					oncomplete="PF('cadastroContatosDialog').hide()" />
+					update="formContato:messages, formContato:tableContatos, formDialog:contentContato"
+					process="contentContato @this"/>
 			</f:facet>
 		</p:dialog>
 
@@ -149,7 +148,7 @@
 			header="Excluir Contato">
 			<p:commandButton value="Confirmar" icon="pi pi-check"
 				actionListener="#{contatoMBean.onExcluir}" process="@this"
-				update="formContato:tableContatos"
+				update="formContato:tableContatos, formContato:messages"
 				oncomplete="PF('excluirContatoDialog').hide()" />
 			<p:commandButton value="Cancelar" type="button"
 				styleClass="ui-button-secondary"

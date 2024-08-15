@@ -11,6 +11,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 import controller.abstracts.CrudBaseMBean;
@@ -18,14 +19,12 @@ import model.entity.transferobject.TOCliente;
 import model.entity.transferobject.TOContato;
 import service.ClienteSBean;
 import service.ContatoSBean;
-import utils.EmailUtils;
 
 @ViewScoped
 @Named("clienteMBean")
 public class ClienteMBean extends CrudBaseMBean implements Serializable {
 
 	private static final long serialVersionUID = 6182921764947574982L;
-	private EmailUtils emailUtils = EmailUtils.getInstance();
 	private TOCliente cliente;
 	private TOCliente clienteSelected;
 	private List<TOContato> contatosSelected;
@@ -48,7 +47,7 @@ public class ClienteMBean extends CrudBaseMBean implements Serializable {
 
 	@Override
 	public void onCadastrar() {
-		if (validarEmail()) {
+		if (validarEmail(cliente.getEmails())) {
 			adicionarContato();
 			getClienteSbean().salvarCliente(cliente);
 			showMessage(FacesMessage.SEVERITY_INFO, "Cadastro efetuado com sucesso!");
@@ -59,14 +58,18 @@ public class ClienteMBean extends CrudBaseMBean implements Serializable {
 
 	@Override
 	public void onAtualizar() {
-		getClienteSbean().atualizarCliente(clienteSelected);
-		this.clientes = getClienteSbean().listarClientes();
-		showMessage(FacesMessage.SEVERITY_INFO, "Atualização efetuada com sucesso!");
+		if (validarEmail(clienteSelected.getEmails())) {
+			getClienteSbean().atualizarCliente(clienteSelected);
+			this.clientes = getClienteSbean().listarClientes();
+			showMessage(FacesMessage.SEVERITY_INFO, "Atualização efetuada com sucesso!");
+			PrimeFaces.current().executeScript("PF('cadastroClientesDialog').hide()");
+		}
 	}
 
 	@Override
 	public void onExcluir() {
 		getClienteSbean().remover(cliente);
+		this.clientes = getClienteSbean().listarClientes();
 	}
 
 	@Override
@@ -99,20 +102,6 @@ public class ClienteMBean extends CrudBaseMBean implements Serializable {
 		for (TOContato contato : contatosClienteSelected) {
 			clienteSelected.getContatos().add(contato);
 		}
-	}
-
-	private boolean validarEmail() {
-		String emails = "";
-		for (String email : cliente.getEmails()) {
-			if (!emailUtils.validaEmail(email)) {
-				emails = emails + " " + email;
-			}
-		}
-		if (!emails.isEmpty()) {
-			showMessage(FacesMessage.SEVERITY_ERROR, "Os seguintes emails estão inválidos: " + emails);
-			return false;
-		}
-		return true;
 	}
 
 	public void onRowSelect(SelectEvent<?> event) {

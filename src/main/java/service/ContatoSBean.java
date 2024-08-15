@@ -9,18 +9,16 @@ import javax.persistence.TypedQuery;
 
 import model.entity.Contato;
 import model.entity.transferobject.TOContato;
-import repository.BancoDB;
 import repository.factory.Factory;
 
 public class ContatoSBean {
 
-	private BancoDB repository;
-
-
 	public ContatoSBean() {
-		repository = BancoDB.getInstance();
 	}
 
+	/*
+	 * Salva contato
+	 */
 	public void salvarContato(TOContato toContato) {
 		EntityManager entityManager = Factory.getEntityManager();
 		EntityTransaction entityTransaction = entityManager.getTransaction();
@@ -36,28 +34,30 @@ public class ContatoSBean {
 	}
 
 	/*
-	 * Encontra Contatos por nome completo e chave de acesso
-	 */
-	public TOContato encontrarContato(String nomeCompleto, String chaveAcesso) {
-		return (TOContato) repository.getContatos().stream()
-				.filter(c -> c.getNomeCompleto().equals(nomeCompleto) && c.getTelefone1().equals(chaveAcesso));
-	}
-
-	/*
 	 * Recebe Contato e verifica se existe ou não antes de efetivar remoção
 	 */
 	public void remover(TOContato tocontato) {
 		EntityManager entityManager = Factory.getEntityManager();
-	    EntityTransaction transaction = entityManager.getTransaction();
+		EntityTransaction transaction = entityManager.getTransaction();
 		Contato contato = entityManager.find(Contato.class, tocontato.getId());
-		transaction.begin();
-		if(contato != null) {
+		if (contato != null) {
+			transaction.begin();
 			entityManager.remove(contato);
+			transaction.commit();
 		}
-		transaction.commit();
+
 		entityManager.close();
 	}
 	
+	public boolean verificaContatoVinculado(TOContato tocontato) {
+		EntityManager entityManager = Factory.getEntityManager();
+		Contato contato = entityManager.find(Contato.class, tocontato.getId());
+		TypedQuery<Long> query = entityManager.createQuery(
+				"SELECT COUNT(c) FROM Cliente c JOIN c.contatos ct WHERE ct = :contatoAVerificar", Long.class);
+		query.setParameter("contatoAVerificar", contato);
+		return query.getSingleResult() > 0;
+	}
+
 	/*
 	 * Atualiza o Contato com as novas informações informadas
 	 */
@@ -71,8 +71,8 @@ public class ContatoSBean {
 		contatoExistente.setEmails(tocontato.getEmails());
 		transaction.begin();
 		entityManager.merge(contatoExistente);
-        transaction.commit();
-        entityManager.close();
+		transaction.commit();
+		entityManager.close();
 	}
 
 	/**

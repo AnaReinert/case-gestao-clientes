@@ -12,16 +12,12 @@ import model.entity.Cliente;
 import model.entity.Contato;
 import model.entity.transferobject.TOCliente;
 import model.entity.transferobject.TOContato;
-import repository.BancoDB;
 import repository.factory.Factory;
 import utils.TOtoEntityConverter;
 
 public class ClienteSBean {
 
-	private BancoDB repository;
-
 	public ClienteSBean() {
-		repository = BancoDB.getInstance();
 	}
 
 	public void salvarCliente(TOCliente tocliente) {
@@ -38,6 +34,9 @@ public class ClienteSBean {
 			Contato contato = new Contato();
 			contato.setId(toContato.getId());
 			contato.setNomeCompleto(toContato.getNomeCompleto());
+			contato.setEmails(toContato.getEmails());
+			contato.setTelefone1(toContato.getTelefone1());
+			contato.setTelefone2(toContato.getTelefone2());
 			contatos.add(contato);
 		}
 		cliente.setContatos(new HashSet<Contato>(contatos));
@@ -48,34 +47,34 @@ public class ClienteSBean {
 	}
 
 	/*
-	 * Encontra clientes por nome completo e chave de acesso
+	 * Recebe cliente e atualiza dados
 	 */
-	public TOCliente encontrarCliente(String nomeCompleto, String chaveAcesso) {
-		return (TOCliente) repository.getClientes().stream()
-				.filter(c -> c.getNomeCompleto().equals(nomeCompleto) && c.getTelefone1().equals(chaveAcesso));
-	}
-
 	public void atualizarCliente(TOCliente tocliente) {
 		EntityManager entityManager = Factory.getEntityManager();
 		EntityTransaction transaction = entityManager.getTransaction();
-		transaction.begin();
 		Cliente clienteExistente = entityManager.find(Cliente.class, tocliente.getId());
-		clienteExistente.setNomeCompleto(tocliente.getNomeCompleto());
-		clienteExistente.setTelefone1(tocliente.getTelefone1());
-		clienteExistente.setTelefone2(tocliente.getTelefone2());
-		clienteExistente.setDataRegistro(tocliente.getDataRegistroCliente());
-		List<Contato> contatos = new ArrayList<>();
-		for (TOContato toContato : tocliente.getContatos()) {
-			Contato contato = new Contato();
-			contato.setId(toContato.getId());
-			contato.setNomeCompleto(toContato.getNomeCompleto());
-			contatos.add(contato);
+		if (clienteExistente != null) {
+			clienteExistente.setNomeCompleto(tocliente.getNomeCompleto());
+			clienteExistente.setTelefone1(tocliente.getTelefone1());
+			clienteExistente.setTelefone2(tocliente.getTelefone2());
+			clienteExistente.setDataRegistro(tocliente.getDataRegistroCliente());
+			List<Contato> contatos = new ArrayList<>();
+			for (TOContato toContato : tocliente.getContatos()) {
+				Contato contato = new Contato();
+				contato.setId(toContato.getId());
+				contato.setNomeCompleto(toContato.getNomeCompleto());
+				contato.setEmails(toContato.getEmails());
+				contato.setTelefone1(toContato.getTelefone1());
+				contato.setTelefone2(toContato.getTelefone2());
+				contatos.add(contato);
+			}
+			clienteExistente.setContatos(new HashSet<Contato>(contatos));
+			clienteExistente.setEmails(tocliente.getEmails());
+			transaction.begin();
+			entityManager.merge(clienteExistente);
+			transaction.commit();
+			entityManager.close();
 		}
-		clienteExistente.setContatos(new HashSet<Contato>(contatos));
-		clienteExistente.setEmails(tocliente.getEmails());
-		entityManager.merge(clienteExistente);
-        transaction.commit();
-        entityManager.close();
 	}
 
 	/*
@@ -101,7 +100,6 @@ public class ClienteSBean {
 		EntityTransaction entityTransaction = entityManager.getTransaction();
 		entityTransaction.begin();
 		String jpql = "from Cliente";
-
 		TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class);
 		List<Cliente> clientes = query.getResultList();
 		TOtoEntityConverter converter = new TOtoEntityConverter();
