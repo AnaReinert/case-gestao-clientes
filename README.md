@@ -17,20 +17,20 @@ Esse é um projeto desenvolvido inteiramente em Java para resolução do Case de
 - Importe no o projeto no eclipse, através do File > Import... > Existing Projects into Workspace
 - (Opcional) Para melhor visualização do projeto, eu prefiro utilizar o Package Explorer no lugar do Project Explorer
   - Window > Show View > Other... > Java > Package Explorer > Open
-  - Nos três pontos da direita superior, escolha a opção Package Presentation > Hierarchical. Ela ajudará na visualização hierarquica do projeto
-- As vezes pode ser necessário dar um clean no projeto, principalmente se as classes não tiverem encontrando os imports informados. Para isso, em Project > Clean > Clean
+  - Nos três pontos da direita superior, escolha a opção Package Presentation > Hierarchical. Ela ajudará na visualização hierárquica do projeto
+- Às vezes pode ser necessário dar um clean no projeto, principalmente se as classes não tiverem encontrando os imports informados. Para isso, em Project > Clean > Clean
 
 ### Criação e Execução do Banco de Dados
 
-- Para que a persistencia ocorra sem erros. Crie uma database com o nome gestaoclientes no seu **PgAdmin**
+- Para que a persistência ocorra sem erros. Crie uma database com o nome gestaoclientes no seu **PgAdmin**
 - No documento src > main > java > META-INF > persistence.xml
-    - edite a property `javax.persistence.jdbc.user` e `javax.persistence.jdbc.password` com as credenciais de acesso do seu PgAdmin.
-      ->  Usuário e senha atuais estão como potgres
-    - Depois de subir o servidor pela primeira vez, comente a property `hibernate.hbm2ddl.auto`. Isso evita que ela sobrescreva a datatabe todas as vezes que o servidor subir
+    - Edite a property `javax.persistence.jdbc.user` e `javax.persistence.jdbc.password` com as credenciais de acesso do seu PgAdmin.
+      ->  Usuário e senha atuais estão como postgres
+    - Depois de subir o servidor pela primeira vez, comente a property `hibernate.hbm2ddl.auto`. Isso evita que ela sobrescreva a database todas as vezes que o servidor subir
 
 ### Criação e Execução do Servidor
-- Para criar um servidor, acesse a aba de servers e escolha a opção `Red Had JBoss Middleware > JBoss AS, WildFly & EAP Server Tools`.
-- Espere o Download das dependencias necessárias do eclipse.
+- Para criar um servidor, acesse a aba de servers e escolha a opção `Red Hat JBoss Middleware > JBoss AS, WildFly & EAP Server Tools`.
+- Espere o Download das dependências necessárias do eclipse.
 - Aceite os termos e clique em Finish. Eclipse vai installar as ferramentas necessárias para utilização do WildFly.
 - Na dialog de Trust Authorities que aparecer durante o Download, dê um Select All e Trust Selected.
 - Faça a mesma coisa no Trust Artifacts.
@@ -40,7 +40,7 @@ Esse é um projeto desenvolvido inteiramente em Java para resolução do Case de
 - Escolha a opção do WildFly 24+ > Next
 - Mantenha no Local e FileSystem and Shell Operations > Next
 - No Home Directory, informe o local de instalação do Wildfly baixado.
-    - >Certifique-se de que o diretório informado chega até a pasta standalone. Utilizando o Extrair tudo do Windows, ele joga o item extraido em uma pasta com o nome do zip
+    - >Certifique-se de que o diretório informado chega até a pasta standalone. Utilizando o Extrair tudo do Windows, ele joga o item extraído em uma pasta com o nome do zip
 - No Runtime JRE opte pelo Execution Environment com **JavaSE 17**
 - Se o wildfly não encontrar a pasta standalone no server base directory, vá até wildfly-25.0.0.Final > standalone
 - Certifique-se de que o Configuration file seja o standalone.xml da pasta standalone e de um Finish
