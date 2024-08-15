@@ -50,6 +50,31 @@ Esse é um projeto desenvolvido inteiramente em Java para resolução do Case de
 ### Projeto já está pronto para executar
 Acesse-o pela url **localhost:8080/gestao-clientes**
 
-  
+
+## Estrutura de Pastas
+
+![image](https://github.com/user-attachments/assets/90859956-d088-4a3e-9e60-2c6de06ec6da)
+
+**Padrão de arquitetura:** MVC
+
+### Classes Java
+
+- **Controller:** Camada de controle da aplicação, nele estarão todas as classes ManageBeans que mandarão informações para tela.
+   - **Abstracts:**  Classes abstratas para uso comum entre as classes concretas de controle.
+- **Model:** Classes de Entidade e Objetos para manipulação em tela.
+   - **Entity**: Classes de entidade para conexão com o banco de dados.
+   - **Abstracts:** Classes abstratas para as entidades.
+   - **TransferObject:** Classes para manipulação em tela, usadas para levar informação dos Controladores para os Serviços e retornar valores dos Serviços para os Controladores.
+       - **Abstracts:** Classes abstratas para os TOs.
+- **Repository.factory:** Criação da factory dos EntityManagers.
+- **Service:** Classes de comunicação com o banco, responsáveis por fazer solicitações e retornar dados.  Camada de modelo da aplicação.
+- **Utils:** Classes utilitárias para o sistema.
+- **META-INF:** Contém o persistence.xml, arquivo que configura a comunicação com o banco.
 
 
+![image](https://github.com/user-attachments/assets/b7fd1cad-a507-4df7-9d93-3a9bd7f595d4)
+### Classes HTML
+- **webapp:** Contém as views da aplicação, com telas xhtml.
+- **resources:** Componentes, imagens e estilos css
+    - **components:** Componentes personalizados
+    - **style:** Estilos css
